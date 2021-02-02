@@ -1,0 +1,26 @@
+{
+  "name": "social-post-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bdushimi/social-post-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bdushimi/social-post-app/issues"
+  },
+  "homepage": "https://github.com/bdushimi/social-post-app#readme",
+  "dependencies": {
+    "apollo-server": "^2.19.2",
+    "graphql": "^15.5.0",
+    "mongoose": "^5.11.14"
+  }
+}
