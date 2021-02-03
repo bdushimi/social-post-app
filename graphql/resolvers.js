@@ -5,6 +5,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { UserInputError} =  require ('apollo-server');
 
+
+const { validateRegisterInputs } = require ('../utils/validators')
+
 module.exports = {
 
     // Grouping all queries implementation in a Query object
@@ -25,7 +28,12 @@ module.exports = {
             let { registerInputs : { username, email, password, confirmPassword} } = args;
 
             // Validate inputs
-            
+             const { errors, valid } = validateRegisterInputs(username, email, password, confirmPassword);
+             if(!valid){
+                 throw new UserInputError(" UserInputError", {
+                     errors
+                 })
+             }
 
 
             // Check if a user already exists
