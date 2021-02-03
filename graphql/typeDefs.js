@@ -31,6 +31,7 @@ input RegisterInputs {
 
 type Mutation {
     register(registerInputs : RegisterInputs): User!
+    login(username: String!, password: String): User!
 }
 
 type User {

@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 const { UserInputError} =  require ('apollo-server');
 
 
-const { validateRegisterInputs } = require ('../utils/validators')
+
+const { validateRegisterInputs, validateLoginInputs } = require ('../utils/validators')
 
 module.exports = {
 
@@ -67,7 +68,48 @@ module.exports = {
                ...res._doc
             }
 
+        },
+
+        async login(parent, args, context, info){
+            
+            let {username, password } = args;
+            
+            // Validate inputs
+             const { errors, valid } = validateLoginInputs(username, password);
+             if(!valid){
+                 throw new UserInputError(" UserInputError", {
+                     errors
+                 })
+             }
+
+              // Check if a user already exists
+            const user = await User.findOne({ username });
+
+            if(!user){
+                errors.general = "User not found";
+                throw new UserInputError("User not found", {errors});
+            }
+
+            const match = await bcrypt.compare(password, user.password);
+
+            if(!match){
+                errors.general = "Wrong credentials";
+                throw new UserInputError("Wrong credentials", {errors})
+            }
+
+            const token = jwt.sign({
+                id: user.id,
+                email:user.email,
+                username: user.username
+            }, process.env.TOKEN_SECRET, {expiresIn : "1h"});
+
+            return {
+               id: user._id,
+               token,
+               ...user._doc
+            }
+
         }
     }
 
-}
+ }
