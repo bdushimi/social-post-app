@@ -1,26 +1,12 @@
 const { ApolloServer } = require("apollo-server");
 const gql = require('graphql-tag');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 
-// Define the Schema
-// With gql, the schema (mutatation, query, object types) are written using string literals
-const typeDefs = gql`
-
-type Query {
-    welcome: String!
-}
-
-`
-
-// Contains the implementation of each query or mutatation
-const resolvers = {
-
-    // Grouping all queries implementation in a Query object
-    Query : {
-        welcome: () => "Welcome to Social-Post-App"
-    }
-
-}
+const typeDefs = require('./graphql/typeDefs');
+const resolvers = require('./graphql/resolvers');
+const Post = require('./models/Post')
 
 const server = new ApolloServer({
     typeDefs,
@@ -28,8 +14,13 @@ const server = new ApolloServer({
 });
 
 
-server
-.listen()
-.then((res) => {
+// Connecting to the database
+mongoose
+.connect(process.env.DB_URL, {useNewUrlParser: true})
+.then(() =>{
+    console.log('Database connected... :)');
+    return server
+    .listen()
+}).then((res) => {
     console.log(`Server is running on ${res.url}`);
 })
