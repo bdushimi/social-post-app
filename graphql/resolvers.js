@@ -4,6 +4,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { UserInputError} =  require ('apollo-server');
+const checkAuth = require('../utils/checkAuth');
 
 
 
@@ -20,6 +21,19 @@ module.exports = {
                 return posts;
             }catch (error){
                 throw new Error(error);
+            }
+        },
+        async getPost(parent, args, context, info){
+            const { postId } = args;
+
+            try{
+
+                const post = await Post.findById(postId);
+                if(post) return post;
+                else throw new Error("Post not found");
+
+            }catch(error){
+                throw new Error(error.message);
             }
         }
     },
@@ -109,6 +123,21 @@ module.exports = {
                ...user._doc
             }
 
+        },
+
+        async createPost(parent, args, context, info){
+            const { body } = args;
+
+            const user = checkAuth(context);
+
+            const newPost = await new Post({
+                body,
+                user: user.id,
+                username: user.username,
+                createdAt: new Date().toISOString()
+            })
+
+            return await newPost.save();
         }
     }
 

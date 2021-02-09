@@ -18,6 +18,7 @@ type Post {
 type Query {
     welcome: String!
     getPosts: [Post]
+    getPost(postId: ID!): Post
 }
 
 
@@ -32,6 +33,8 @@ input RegisterInputs {
 type Mutation {
     register(registerInputs : RegisterInputs): User!
     login(username: String!, password: String): User!
+    createPost(body: String!): Post!
+    deletePost(postId: ID!): Boolean
 }
 
 type User {

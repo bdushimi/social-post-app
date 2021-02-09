@@ -10,7 +10,8 @@ const Post = require('./models/Post')
 
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context: ({req}) => ({req})
 });
 
 
