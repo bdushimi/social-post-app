@@ -18,5 +18,5 @@ module.exports = (context) => {
         throw new Error('Authentication token is not provided/invalid');
     }
 
-    throw new Error('Authentication header must be provided');
+    throw new Error('Authorization header must be provided');
 }

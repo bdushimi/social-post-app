@@ -3,7 +3,7 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { UserInputError} =  require ('apollo-server');
+const { UserInputError, AuthenticationError} =  require ('apollo-server');
 const checkAuth = require('../utils/checkAuth');
 
 
@@ -17,7 +17,7 @@ module.exports = {
         welcome: () => "Welcome to Social-Post-App",
         async getPosts(){
             try {
-                const posts = await Post.find();
+                const posts = await Post.find().sort({createdAt: -1});
                 return posts;
             }catch (error){
                 throw new Error(error);
@@ -138,6 +138,26 @@ module.exports = {
             })
 
             return await newPost.save();
+        }, 
+
+        async deletePost(parent, args, context, info) {
+            const { postId } = args;
+
+            const user = checkAuth(context);
+
+            try{
+
+                const post = await Post.findById(postId);
+                if(user.username === post.username){
+                    await post.delete();
+                    return true
+                }else {
+                    throw new AuthenticationError("You do not own this post!")
+                }
+            }catch(error){
+                throw new Error(error);
+            }
+             
         }
     }
 
