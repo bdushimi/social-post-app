@@ -12,6 +12,11 @@ const { validateRegisterInputs, validateLoginInputs } = require ('../utils/valid
 
 module.exports = {
 
+    // Field resolvers
+    Post: {
+        likesCount : (parent) => parent.likes.length,
+        commentsCount : (parent) => parent.comments.length,
+    },
     // Grouping all queries implementation in a Query object
     Query : {
         welcome: () => "Welcome to Social-Post-App",
@@ -128,6 +133,10 @@ module.exports = {
         async createPost(parent, args, context, info){
             const { body } = args;
 
+            if(body.trim() === ""){
+                throw new Error("Post body must not be empty");
+            }
+
             const user = checkAuth(context);
 
             const newPost = await new Post({
@@ -137,7 +146,13 @@ module.exports = {
                 createdAt: new Date().toISOString()
             })
 
-            return await newPost.save();
+            const post = await newPost.save();
+
+            context.pubSub.publish("NEW_POST", { 
+                newPost: post
+            });
+
+            return post;
         }, 
 
         async deletePost(parent, args, context, info) {
@@ -158,7 +173,81 @@ module.exports = {
                 throw new Error(error);
             }
              
+        },
+
+        async createComment(parent, args, context, info){
+            const { postId, body } = args;
+
+            const { username } = checkAuth(context);
+
+            if(body.trim() === "") throw new UserInputError("Empty comment", {
+                errors: {
+                    body: " Comment body must not be empty"
+                }
+            })
+
+
+            const post = await Post.findById(postId)
+            if(post){
+                post.comments.unshift({
+                    body,
+                    username,
+                    createdAt: new Date().toISOString()
+                })
+
+                return await post.save();
+            }else {
+                throw new UserInputError("Post not found")
+            }
+        },
+
+        async likePost(parent, args, context, info){
+
+            const { postId } = args;
+            const { username, id } = checkAuth(context);
+
+            const post = await Post.findById(postId);
+
+            if(post){
+                if(post.likes.find(like => like.username === username)){
+                    // Post already likes, unlike it
+                    post.likes = post.likes.filter(like => like.username !== username);
+
+                }else {
+                    post.likes.push({
+                        username,
+                        createdAt: new Date().toISOString()
+                    })
+                }
+
+                await post.save();
+                return post;
+            }else throw new UserInputError("Post not found");
+        },
+
+        async deleteComment(parent, args, context, info){
+            const {username} = checkAuth(context);
+            const { commentId, postId } = args;
+            const post = await Post.findById(postId)
+
+            if(post){
+                const commentIndex = post.comments.findIndex( c => c.id === commentId);
+                if(post.comments[commentIndex].username === username){
+                    post.comments.splice(commentIndex,1);
+                    await post.save();
+                    return post;
+                }else {
+                    throw new AuthenticationError('Action not allowed')
+                }
+            }
+        }
+
+    },
+
+    Subscription: {
+        newPost: {
+            subscribe: (parent, args, context, info) => context.pubSub.asyncIterator("NEW_POST")
         }
     }
 
- }
+ } 
