@@ -1,0 +1,16 @@
+.page-title{
+    display:block !important;
+    text-align:center;
+    font-size:2rem;
+    margin-top:10px
+}
+
+
+.card {
+    margin-bottom : 20px !important;
+}
+
+.form-container {
+    width: 400px;
+    margin: auto !important
+}
