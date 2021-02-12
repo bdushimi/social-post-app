@@ -4,12 +4,9 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { createHttpLink } from "apollo-link-http";
 import { ApolloProvider } from "@apollo/react-hooks";
 
-console.log(process.env.REACT_APP_BACKEND_URL);
 
 const httpLink = createHttpLink({
-
-    uri: process.env.REACT_APP_BACKEND_URL
-
+    uri: process.env.REACT_APP_BACKEND_URL 
 })
 
 
