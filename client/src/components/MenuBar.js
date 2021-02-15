@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Menu } from 'semantic-ui-react'
 import { Link } from "react-router-dom";
+import {AuthContext} from '../utils/context'
 
 function MenuBar() {
+
+  const context = useContext(AuthContext);
 
   const pathname = window.location.pathname;
 
@@ -12,22 +15,36 @@ function MenuBar() {
 
   const handleItemClick = (e, { name }) => setActiveItem(name)
 
-    return (
-        <Menu pointing secondary size="massive" color="teal">
+  const handleLogout = () => {
+    context.logout();
+  }
+
+  const userMenuBar = context.user ? (
+    <Menu pointing secondary size="massive" color="teal">
+      <Menu.Item
+        name={context.user.username}
+        as={Link}
+        to="/"
+      />
+      <Menu.Menu position='right'>
+        <Menu.Item
+          name='logout'
+          active={activeItem === 'logout'}
+          onClick={handleLogout}
+        />
+      </Menu.Menu>
+    </Menu>
+  ) : (
+      <Menu pointing secondary size="massive" color="teal">
+        <Menu.Item
+          name='home'
+          active={activeItem === 'home'}
+          onClick={handleItemClick}
+          as={Link}
+          to="/"
+        />
+        <Menu.Menu position='right'>
           <Menu.Item
-            name='home'
-            active={activeItem === 'home'}
-            onClick={handleItemClick}
-            as={Link}
-            to="/"
-          /> 
-          <Menu.Menu position='right'>
-            <Menu.Item
-              name='logout'
-              active={activeItem === 'logout'}
-              onClick={handleItemClick}
-            />
-            <Menu.Item
             name='login'
             active={activeItem === 'login'}
             onClick={handleItemClick}
@@ -40,10 +57,12 @@ function MenuBar() {
             onClick={handleItemClick}
             as={Link}
             to="/signup"
-          />  
-          </Menu.Menu>
-        </Menu>
-    )
+          />
+        </Menu.Menu>
+      </Menu>
+  )
+
+    return userMenuBar
 }
 
 export default MenuBar;
