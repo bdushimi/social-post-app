@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Icon, Label, Image, Button} from "semantic-ui-react"
-import moment from 'module';
+import moment from 'moment';
 
 export default function PostCard(props) {
 
