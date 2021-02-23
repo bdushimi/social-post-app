@@ -30,7 +30,7 @@ const Signup = (props) => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        registerUser() 
+        registerUser();
     }
 
     const onChange = (event) => {
