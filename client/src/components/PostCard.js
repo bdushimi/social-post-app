@@ -4,6 +4,7 @@ import moment from 'moment';
 import {Link} from "react-router-dom"
 import { AuthContext } from "../utils/context"
 import LikeButton from "./LikeButton"
+import DeleteButton from "./DeleteButton"
 
 export default function PostCard(props) {
 
@@ -45,15 +46,7 @@ export default function PostCard(props) {
             </Button>
 
             {
-              user && user.username === props.post.username && (
-                <Button 
-                as='div' 
-                color='red' 
-                floated='right'
-                onClick={()=>{}}>
-                  <Icon name='trash' style={{ margin : 0 }}/>
-                </Button>
-              )
+              user && user.username === props.post.username && <DeleteButton postId={props.post.id}/>
             }
 
          </div>

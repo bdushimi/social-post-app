@@ -19,14 +19,14 @@ type Post {
 
 }
 
-type Comment{
+type Comment {
     id:ID!
     createdAt: String!
     username:String!
     body:String!
 }
 
-type Like{
+type Like {
     id:ID!
     createdAt:String!
     username:String!

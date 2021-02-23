@@ -15,6 +15,7 @@ export default function PostForm() {
    const [createPost, { error }] = useMutation(CREATE_POST, {
     variables: values,
     update(proxy, result) {
+
       const data = proxy.readQuery({
         query: FETCH_POSTS_QUERY,
       });
@@ -30,8 +31,9 @@ export default function PostForm() {
           },
         },
       });
+      
       values.body = '';
-    },
+    }
   });
 
     const onSubmit = (event) => {
@@ -103,6 +105,8 @@ mutation createPost(
 }
 
 `
+
+
 const FETCH_POSTS_QUERY = gql`
 {
   getPosts {
@@ -119,7 +123,6 @@ const FETCH_POSTS_QUERY = gql`
       createdAt
     }
     likes {
-        id
       username
       createdAt
     }
